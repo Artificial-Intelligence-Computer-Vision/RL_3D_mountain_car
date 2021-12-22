@@ -6,4 +6,6 @@
 
 4. Use Meta Learning with Inverse Reinforcement Learning
 
-5. Implement it with images
+5. Use Meta Learning and Transfer Learning together
+
+6. Implement it with images
