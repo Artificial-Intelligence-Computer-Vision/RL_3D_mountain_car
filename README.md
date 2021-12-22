@@ -5,3 +5,5 @@
 2. Use Meta Learning to relearn the weights
 
 4. Use Meta Learning with Inverse Reinforcement Learning
+
+5. Implement it with images
