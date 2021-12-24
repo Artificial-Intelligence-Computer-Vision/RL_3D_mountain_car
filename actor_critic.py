@@ -58,8 +58,6 @@ class actor_critic(object):
         return theta, weight, episode_rewards, step_per_episode, total_rewards, record_last_state
 
 
-
-
     def action_softmax(x_feature_vector):
         return np.exp(x_feature_vector - np.max(x_feature_vector)) / (np.exp(x_feature_vector - np.max(x_feature_vector))).sum(axis=0)
 
