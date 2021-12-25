@@ -11,6 +11,22 @@ class actor_critic(object):
         self.record_last_state = []
 
 
+    def action_softmax(x_feature_vector):
+        return np.exp(x_feature_vector - np.max(x_feature_vector)) / (np.exp(x_feature_vector - np.max(x_feature_vector))).sum(axis=0)
+
+
+    def policy(vector):
+        action_vector = np.zeros(vector.size)
+        action = random.random()
+        
+        for i in range(vector.size):
+            action_vector = np.sum(vector[:i+1])
+            if action >= vector[i]:
+                return i
+            else:
+                return np.random.randint(0, 5)
+
+
     def actor_critic_with_eligibility_traces(gamma = 0.1, lambda_theta = 0.0005, lambda_weight = 0.0005, alpha_theta = 2**-9, alpha_weight = 2**-6, number_of_episodes = 25):
 
         weight = np.zeros(5)
@@ -27,8 +43,8 @@ class actor_critic(object):
 
             while not reached_goal:
                 old_state = np.append(1,current_state)
-                action_probability = action_softmax(old_state)
-                action = choose_action(action_probability)
+                action_probability = self.action_softmax(old_state)
+                action = self.policy(action_probability)
                 action, reward, next_state, reached_goal = mountaincar3d.enviroment_step(action)
                 new_state = np.append(1, next_state)
 
@@ -43,7 +59,7 @@ class actor_critic(object):
                     delta = reward + gamma *(np.dot(new_state, weight)) - (np.dot(old_state, weight))
 
                 Z_weight = gamma * lambda_weight * Z_weight + delta * (np.dot(old_state, weight))
-                Z_theta = gamma * lambda_theta * Z_theta + I * delta * action_softmax(old_state)
+                Z_theta = gamma * lambda_theta * Z_theta + I * delta * self.action_softmax(old_state)
                 weight += alpha_weight * delta * Z_weight
                 theta += alpha_theta * delta * Z_theta
 
@@ -56,22 +72,3 @@ class actor_critic(object):
             total_rewards.append(reward_count)
     
         return theta, weight, episode_rewards, step_per_episode, total_rewards, record_last_state
-
-
-    def action_softmax(x_feature_vector):
-        return np.exp(x_feature_vector - np.max(x_feature_vector)) / (np.exp(x_feature_vector - np.max(x_feature_vector))).sum(axis=0)
-
-
-    def choose_action(vector):
-        action_vector = np.zeros(vector.size)
-        action = random.random()
-        for i in range(vector.size):
-            action_vector = np.sum(vector[:i+1])
-            if action >= vector[i]:
-                return i
-            else:
-                return np.random.randint(0, 5)
-
-
-
-

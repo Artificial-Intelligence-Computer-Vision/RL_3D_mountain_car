@@ -14,7 +14,6 @@ class MountainCar3D(object):
         self.hillFreq = 3.0
         self.delta_time = 1.0
 
-
     def reset(self):
         if self.random_start:
             self.state = np.random.random_sample(self.state.shape)
@@ -24,16 +23,9 @@ class MountainCar3D(object):
             self.state = np.zeros(self.state.shape)
             self.state[:,0] = -0.5
 
-
-    def makeTaskSpec(self):
-        ts = TaskSpec(discount_factor=1.0, reward_range=(-1.0, 0.0))
-        ts.setDiscountFactor(1.0)
-        ts.addDiscreteAction((0, self.state.shape[0]*2))
-        flattened_ranges = self.state_range.reshape((np.prod(self.state_range.shape[:2]), self.state_range.shape[2]))
-        for minValue, maxValue in flattened_ranges:
-            ts.addContinuousObservation((minValue, maxValue))
-        ts.setEpisodic()
-        return ts.toTaskSpec()
+    def start(self):
+        self.reset()
+        return  np.array(self.state.flatten().tolist())
 
 
     def step(self, thisAction):
