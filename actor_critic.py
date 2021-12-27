@@ -11,11 +11,11 @@ class actor_critic(object):
         self.record_last_state = []
 
 
-    def action_softmax(x_feature_vector):
+    def action_softmax(self, x_feature_vector):
         return np.exp(x_feature_vector - np.max(x_feature_vector)) / (np.exp(x_feature_vector - np.max(x_feature_vector))).sum(axis=0)
 
 
-    def policy(vector):
+    def policy(self, vector):
         action_vector = np.zeros(vector.size)
         action = random.random()
         

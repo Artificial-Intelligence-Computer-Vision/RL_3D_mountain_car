@@ -1,6 +1,6 @@
 # TODO
 
-1. Complete and expend on the word
+1. Complete and expend on the world, with different function type
 
 2. Use Meta Learning to relearn the weights, with an alternative paths
 

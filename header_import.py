@@ -12,6 +12,7 @@ from imgaug import augmenters as iaa
 from tqdm import tqdm
 from random import randint
 import itertools
+import time
 
 import pygame as pg
 from pygame.locals import *
@@ -63,15 +64,15 @@ from tensorflow.keras.layers import Conv2D, Flatten, Dense, MaxPooling2D, Dropou
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.utils import to_categorical
 import matplotlib.image as img
+from collections import deque
 
 from contextlib import redirect_stdout
 from multiprocessing import Pool
 warnings.filterwarnings('ignore')
 plt.style.use('ggplot')
 
-from number_dimension_mountaincar import TaskSpec, MountainCar3D
-from deep_learning_model import *
 from mountain_car_enviroment import *
+from deep_learning_model import *
 from plot_and_animation import *
 from deep_Q_learning import *
 from actor_critic import *

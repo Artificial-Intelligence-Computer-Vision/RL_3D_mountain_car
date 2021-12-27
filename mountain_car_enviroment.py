@@ -1,18 +1,19 @@
 from header_import import *
 
+
 class MountainCar3D(object):
-    def __init__(self, **kwargs):
-        dimension = int(max(2, kwargs.setdefault('dimension', 3)))
-        self.noise = kwargs.setdefault('noise', 0.0)
-        self.reward_noise = kwargs.setdefault('reward_noise', 0.0)
-        self.random_start = kwargs.setdefault('random_start', False)
-        self.state = np.zeros((dimension-1,2))
-        self.state_range = np.array([[[-1.2, 0.6], [-0.07, 0.07]] for i in range(dimension-1)])
+    def __init__(self, noise = 0.0, reward_noise = 0.0, random_start = False):
+        self.noise = noise
+        self.reward_noise = reward_noise
+        self.random_start = random_start
+        self.state = np.zeros((2,2))
+        self.state_range = np.array([[[-1.2, 0.6], [-0.07, 0.07]] for i in range(3-1)])
         self.goal_position = 0.5
         self.acc = 0.005
         self.gravity = -0.0025
         self.hillFreq = 3.0
         self.delta_time = 1.0
+
 
     def reset(self):
         if self.random_start:
@@ -23,25 +24,27 @@ class MountainCar3D(object):
             self.state = np.zeros(self.state.shape)
             self.state[:,0] = -0.5
 
-    def start(self):
-        self.reset()
-        return  np.array(self.state.flatten().tolist())
+        return np.array(self.state.flatten().tolist())
 
 
-    def step(self, thisAction):
-        episodeOver = False
-        theReward = -1.0
-        self.taken_action(thisAction)
+    def reached_goal(self):
+        return (self.state[:,0] >= self.goal_position).all()
+
+
+    def step(self, action):
+        reached_goal = False
+        reward = -1.0
+        self.taken_action(action)
 
         if self.reached_goal():
-            theReward = 0
-            episodeOver = True
+            reward = 0
+            reached_goal = True
 
         if self.reward_noise > 0:
-            theReward += np.random.normal(scale=self.reward_noise)
-        observe_state = self.state.flatten().tolist()
+            reward += np.random.normal(scale=self.reward_noise)
+        next_state = np.asarray(self.state.flatten().tolist())
 
-        return thisAction, theReward, observe_state, episodeOver
+        return action, reward, next_state, reached_goal
 
 
     def taken_action(self, intAction):
