@@ -27,7 +27,7 @@ class actor_critic(MountainCar3D):
                 return np.random.randint(0, 5)
         
     
-    def actor_critic_with_eligibility_traces(self, gamma = 1, lambda_theta = 0.0005, lambda_weight = 0.0005, alpha_theta = 2**-9, alpha_weight = 2**-6, number_of_episodes = 10000):
+    def actor_critic_with_eligibility_traces(self, gamma = 0.1, lambda_theta = 0.0005, lambda_weight = 0.0005, alpha_theta = 2**-9, alpha_weight = 2**-6, number_of_episodes = 10000):
 
         for episode in tqdm(range(number_of_episodes), desc = "Episode"):
             step = 0
