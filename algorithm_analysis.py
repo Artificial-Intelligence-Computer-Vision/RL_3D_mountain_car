@@ -10,9 +10,10 @@ if __name__ == "__main__":
         step_per_episode, episode_reward = deep_q_learning_obj.deep_q_learning()
         plot.plot_episode_time_step(episode_reward, algorithm="deep_q_learning" ,type_graph = "cumulative_reward")
         plot.plot_episode_time_step(step_per_episode, algorithm="deep_q_learning", type_graph = "step_number")
+
     elif algorithm == "actor_critic":
         actor_critic_obj = actor_critic()
-        step_per_episode, episode_rewards = actor_critic_obj.actor_critic_with_eligibility_traces()
+        weights, step_per_episode, episode_rewards = actor_critic_obj.actor_critic_with_eligibility_traces()
         plot.plot_episode_time_step(episode_rewards, algorithm="actor_critic" ,type_graph = "cumulative_reward")
         plot.plot_episode_time_step(step_per_episode, algorithm="actor_critic", type_graph = "step_number")
 

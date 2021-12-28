@@ -49,5 +49,4 @@ class deep_q_learning_algorithm(DeepQLearning):
             self.episode_rewards.append(episode_reward)
 
         self.save_model()
-        
         return self.step_per_episode, self.episode_rewards

@@ -47,11 +47,10 @@ class MountainCar3D(object):
         return action, reward, next_state, reached_goal
 
 
-    def taken_action(self, intAction):
-        intAction = intAction - 1
+    def taken_action(self, action):
         direction = np.zeros((self.state.shape[0],))
-        if intAction >= 0:
-            direction[int(int(intAction)/2)] = ((intAction % 2) - 0.5)*2.0
+        if (action - 1) >= 0:
+            direction[int(int((action -1))/2)] = (((action - 1) % 2) - 0.5)*2.0
         if self.noise > 0:
             direction += self.acc * np.random.normal(scale=self.noise, size=direction.shape)
 

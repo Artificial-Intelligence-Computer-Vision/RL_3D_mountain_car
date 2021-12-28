@@ -1,5 +1,7 @@
 # TODO
 
+tomorrow - Double deep q learning, and duel q learning
+
 1. Complete and expend on the world, with different function type
 
 2. Use Meta Learning to relearn the weights, with an alternative paths
