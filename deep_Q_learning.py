@@ -30,7 +30,7 @@ class deep_q_learning_algorithm(DeepQLearning):
 
     def deep_q_learning(self):
     
-        for episode in tqdm(range(1, self.episode+1), mininterval=100, unit="episode", desc="episode"):
+        for episode in tqdm(range(1, self.episode+1), desc="episode"):
             step = 0
             state = self.reset()
             reached_goal = False
@@ -47,3 +47,7 @@ class deep_q_learning_algorithm(DeepQLearning):
 
             self.step_per_episode.append(step)
             self.episode_rewards.append(episode_reward)
+
+        self.save_model()
+        
+        return self.step_per_episode, self.episode_rewards

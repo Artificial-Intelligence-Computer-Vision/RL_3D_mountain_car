@@ -39,11 +39,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import normalize
 
 from mrcnn import utils, visualize
-import mrcnn.model as modellib
-from mrcnn.config import Config
-from mrcnn import model as modellib, utils
-from mrcnn.visualize import display_images, display_instances
-from mrcnn.model import log
+# import mrcnn.model as modellib
+# from mrcnn.config import Config
+# from mrcnn import model as modellib, utils
+# from mrcnn.visualize import display_images, display_instances
+# from mrcnn.model import log
 
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
@@ -70,6 +70,15 @@ from contextlib import redirect_stdout
 from multiprocessing import Pool
 warnings.filterwarnings('ignore')
 plt.style.use('ggplot')
+from tensorflow.python.client import device_lib
+
+device_name = [x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU']
+if device_name[0] == "/device:GPU:0":
+    device_name = device_name[0]
+    print("GPU")
+else:
+    device_name = device_name[0]
+    print("CPU")
 
 from mountain_car_enviroment import *
 from deep_learning_model import *

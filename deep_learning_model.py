@@ -1,7 +1,7 @@
 from header_import import *
 
 
-class DeepQLearning(MountainCar3D):
+class DeepQLearning(MountainCar3D, TensorBoard):
     def __init__ (self, observation_space=(4,), action_space=5):
         super().__init__()
 
@@ -16,7 +16,7 @@ class DeepQLearning(MountainCar3D):
         self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
         self.replay_memory = deque(maxlen = self.memory_delay)
-        self.tensorboard = model_train(log_dir="logs/{}-{}".format("Q_Learning", int(time.time())))
+        self.tensorboard = TensorBoard(log_dir="logs/{}-{}".format("Q_Learning", int(time.time())))
         self.target_update_counter = 0.001
 
 
@@ -38,8 +38,8 @@ class DeepQLearning(MountainCar3D):
 
 
     def get_q_values(self, state):
-        state_temp = np.array((state).reshape(-1, *state.shape))
-        return self.model.predict(state_temp)[0]
+        state = np.array((state).reshape(-1, *state.shape))
+        return self.model.predict(state)[0]
 
 
     def train(self, reached_goal):
@@ -52,21 +52,21 @@ class DeepQLearning(MountainCar3D):
 
         batch = random.sample(self.replay_memory, self.batch)
         current_states = np.array([transition[0] for transition in batch]) 
-        current_qs_list = self.model.predict(current_states)
+        current_state_value = self.model.predict(current_states)
         new_current_states = np.array([transition[3] for transition in batch])
-        future_qs_list = self.target_model.predict(new_current_states)
+        target_state_value = self.target_model.predict(new_current_states)
 
         for index, (state, action, reward, next_state, done) in enumerate(batch):
             if not done:
-                q_value = reward + self.discount_factor *  np.max(future_qs_list[index])
+                state_value = reward + self.discount_factor *  np.max(target_state_value[index])
             else:
-                q_value = reward
+                state_value = reward
         
-            current_qs = current_qs_list[index]
-            current_qs[action] = q_value
+            current_q_value = current_state_value[index]
+            current_q_value[action] = state_value
 
             X.append(state)
-            Y.append(current_qs)
+            Y.append(current_q_value)
         
         self.model.fit(np.array(X), np.array(Y), batch_size=self.batch, verbose=0, shuffle=False, callbacks=[self.tensorboard] if reached_goal else None)
 
@@ -78,28 +78,5 @@ class DeepQLearning(MountainCar3D):
             self.target_update_counter = 0
 
 
-    def save_model(self, max_reward, min_reward, average_reward):
-        self.model.save(f'models/{"Q_Learning"}__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__{int(time.time())}.model')
-
-
-
-class model_train(TensorBoard):
-    def __init__(self, **kwargs):
-        self.step = 1
-
-    def set_model(self, model):
-        pass
-
-    def on_epoch_end(self, epoch, logs=None):
-        self.update_stats(**logs)
-
-    def on_batch_end(self, batch, logs=None):
-        pass
-
-    def on_train_end(self, _):
-        pass
-
-    def update_stats(self, **stats):
-        self._write_logs(stats, self.step)
-
-
+    def save_model(self):
+        self.model.save("models/" +"Deep_q_learning"+"_model.h5")
