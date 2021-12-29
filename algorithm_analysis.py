@@ -7,9 +7,7 @@ if __name__ == "__main__":
     
     if algorithm == "deep_q_learning_experience_replay":
         deep_q_learning_obj = deep_q_learning_algorithm(episode = 10)
-        step_per_episode, episode_reward = deep_q_learning_obj.deep_q_learning()
-        plot.plot_episode_time_step(episode_reward, algorithm="deep_q_learning" ,type_graph = "cumulative_reward")
-        plot.plot_episode_time_step(step_per_episode, algorithm="deep_q_learning", type_graph = "step_number")
+        step_per_episode, episode_reward = deep_q_learning_obj.deep_q_learning(algorithm_name="deep_q_learning")
 
     elif algorithm == "actor_critic":
         actor_critic_obj = actor_critic()
@@ -19,12 +17,8 @@ if __name__ == "__main__":
 
     elif algorithm == "double_deep_q_learning_experience_replay":
         deep_q_learning_obj = deep_q_learning_algorithm(episode = 10)
-        step_per_episode, episode_reward = deep_q_learning_obj.double_deep_q_learning()
-        plot.plot_episode_time_step(episode_reward, algorithm="double_deep_q_learning" ,type_graph = "cumulative_reward")
-        plot.plot_episode_time_step(step_per_episode, algorithm="double_deep_q_learning", type_graph = "step_number")
+        step_per_episode, episode_reward = deep_q_learning_obj.double_deep_q_learning(algorithm_name="double_deep_q_learning")
    
-    elif algorithm == "dual_q_learning_experience_replay":
+    elif algorithm == "dueling_deep_q_learning_experience_replay":
         deep_q_learning_obj = deep_q_learning_algorithm(episode = 10)
-        step_per_episode, episode_reward = deep_q_learning_obj.double_deep_q_learning()
-        plot.plot_episode_time_step(episode_reward, algorithm="deep_q_learning" ,type_graph = "cumulative_reward")
-        plot.plot_episode_time_step(step_per_episode, algorithm="deep_q_learning", type_graph = "step_number")
+        step_per_episode, episode_reward = deep_q_learning_obj.dueling_deep_q_learning(algorithm_name="dueling_deep_q_learning")

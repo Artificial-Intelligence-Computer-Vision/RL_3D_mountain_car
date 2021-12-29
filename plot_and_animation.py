@@ -4,9 +4,11 @@ from header_import import *
 class plot_graphs(object):
     def __init__(self):
         self.path = "graphs_charts/"
+        self.enviroment_path = self.path + "enviroment_details/"
+        self.model_path = self.path + "model_details/"
 
 
-    def plot_episode_time_step(self, data, algorithm, type_graph = "reward"):
+    def plot_episode_time_step(self, data, type_graph = "reward"):
 
         fig = plt.figure()
         axis = fig.add_subplot(111)
@@ -22,7 +24,7 @@ class plot_graphs(object):
             axis.set_title("Number of steps per episode vs. number of episodes")
             axis.set_xlabel("Number of Steps")
             axis.set_ylabel("Episodes")
-        plt.savefig((str(self.path) + algorithm + "_" + type_graph + ".png"), dpi =500)
+        plt.savefig(self.enviroment_path + self.algorithm_name + "_" + type_graph + ".png", dpi =500)
 
 
     def plot_model(self):
@@ -33,7 +35,7 @@ class plot_graphs(object):
         plt.ylabel('accuracy')
         plt.xlabel('epoch')
         plt.legend(['train', 'Validation'], loc='upper left')
-        plt.savefig(self.graph_path + self.name + "_" + self.model_type + '_accuracy_' + str(self.number_classes) + '.png', dpi =500)
+        plt.savefig(self.model_path + self.algorithm_name + '_accuracy_' + '.png', dpi =500)
         plt.clf()
 
         plt.plot(self.model.history['loss'])
@@ -42,6 +44,6 @@ class plot_graphs(object):
         plt.ylabel('loss')
         plt.xlabel('epoch')
         plt.legend(['train', 'Validation'], loc='upper left')
-        plt.savefig(self.graph_path + self.name + "_" + self.model_type + '_lost_' + str(self.number_classes) +'.png', dpi =500)
+        plt.savefig(self.model_path + self.algorithm_name + '_lost_'+'.png', dpi =500)
         plt.clf()
 

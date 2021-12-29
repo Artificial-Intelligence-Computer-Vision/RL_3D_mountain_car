@@ -27,24 +27,24 @@ class MountainCar3D(object):
         return np.array(self.state.flatten().tolist())
 
 
-    def reached_goal(self):
+    def goal_reached(self):
         return (self.state[:,0] >= self.goal_position).all()
 
 
     def step(self, action):
-        reached_goal = False
+        self.reach_goal = False
         reward = -1.0
         self.taken_action(action)
 
-        if self.reached_goal():
+        if self.goal_reached():
             reward = 0
-            reached_goal = True
+            self.reach_goal = True
 
         if self.reward_noise > 0:
             reward += np.random.normal(scale=self.reward_noise)
         next_state = np.asarray(self.state.flatten().tolist())
 
-        return action, reward, next_state, reached_goal
+        return action, reward, next_state, self.reach_goal
 
 
     def taken_action(self, action):

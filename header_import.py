@@ -22,7 +22,6 @@ from xml.etree import ElementTree
 from matplotlib import pyplot
 from matplotlib.patches import Rectangle
 from math import floor, log
-from keras.callbacks import TensorBoard
 
 from sklearn.tree import DecisionTreeRegressor
 from pandas.plotting import scatter_matrix
@@ -61,7 +60,7 @@ import keras.backend as K
 from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, Flatten, Dense, MaxPooling2D, Dropout, Activation
-from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard, ModelCheckpoint
 from tensorflow.keras.utils import to_categorical
 import matplotlib.image as img
 from collections import deque
@@ -73,13 +72,14 @@ plt.style.use('ggplot')
 from tensorflow.python.client import device_lib
 
 device_name = [x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU']
-if device_name[0] == "/device:GPU:0":
-    device_name = device_name[0]
+
+if device_name != []:
+    device_name = "/device:GPU:0"
     print("GPU")
 else:
-    device_name = device_name[0]
+    device_name = "/device:CPU:0"
     print("CPU")
-
+    
 from mountain_car_enviroment import *
 from deep_learning_model import *
 from plot_and_animation import *
