@@ -2,12 +2,12 @@ from header_import import *
 
 
 class deep_q_learning_algorithm(DeepQLearning):
-    def __init__(self, episode, epsilon, noise = 0.0, reward_noise = 0.0, random_start = False):
-        super().__init__()
+    def __init__(self, episode, noise=0.0, reward_noise=0.0, random_start=False, algorithm_name = "Deep_q_learning_experience_replay"):
+        super().__init__(algorithm_name = algorithm_name)
 
         self.episode = episode
-        self.epsilon = epsilon
-        self.delay_epsilon = 0.99975
+        self.epsilon = 1
+        self.delay_epsilon = 0.995
         self.min_epsilon = 0.001
         self.low_state_bound = np.array([-1.2, -0.07])
         self.high_state_bound = np.array([0.6, 0.07])
@@ -28,6 +28,11 @@ class deep_q_learning_algorithm(DeepQLearning):
             return np.random.randint(0, self.action_size)
 
 
+    def epsilon_reduction(self):
+        if self.epsilon > self.min_epsilon:
+            self.epsilon *= self.delay_epsilon
+
+
     def deep_q_learning(self):
     
         for episode in tqdm(range(1, self.episode+1), desc="episode"):
@@ -45,8 +50,64 @@ class deep_q_learning_algorithm(DeepQLearning):
                 state = next_state
                 step += 1
 
+            self.epsilon_reduction()
             self.step_per_episode.append(step)
             self.episode_rewards.append(episode_reward)
 
         self.save_model()
         return self.step_per_episode, self.episode_rewards
+
+
+
+    def double_deep_q_learning(self):
+
+        for episode in tqdm(range(1, self.episode+1), desc="episode"):
+            step = 0
+            state = self.reset()
+            reached_goal = False
+            episode_reward = 0
+
+            while not reached_goal:
+                action = self.policy(state)
+                action, reward, next_state, reached_goal = self.step(action)
+                episode_reward += reward
+                self.update_replay_memory((state, action, reward, next_state, reached_goal))
+                self.train(reached_goal)
+                state = next_state
+                step += 1
+            
+            self.epsilon_reduction()
+            self.step_per_episode.append(step)
+            self.episode_rewards.append(episode_reward)
+
+        self.save_model()
+        return self.step_per_episode, self.episode_rewards
+
+
+    def dual_deep_q_learning(self):
+
+        for episode in tqdm(range(1, self.episode+1), desc="episode"):
+            step = 0
+            state = self.reset()
+            reached_goal = False
+            episode_reward = 0
+
+            while not reached_goal:
+                action = self.policy(state)
+                action, reward, next_state, reached_goal = self.step(action)
+                episode_reward += reward
+                self.update_replay_memory((state, action, reward, next_state, reached_goal))
+                self.train(reached_goal)
+                state = next_state
+                step += 1
+
+            self.epsilon_reduction()
+            self.step_per_episode.append(step)
+            self.episode_rewards.append(episode_reward)
+
+        self.save_model()
+        return self.step_per_episode, self.episode_rewards
+
+
+        
+
