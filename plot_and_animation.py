@@ -8,7 +8,7 @@ class plot_graphs(object):
         self.model_path = self.path + "model_details/"
 
 
-    def plot_episode_time_step(self, data, type_graph = "reward"):
+    def plot_episode_time_step(self, data, type_graph):
 
         fig = plt.figure()
         axis = fig.add_subplot(111)
@@ -29,8 +29,7 @@ class plot_graphs(object):
 
     def plot_model(self):
 
-        plt.plot(self.model.history['accuracy'])
-        plt.plot(self.model.history['val_accuracy'])
+        plt.plot(self.q_learning_models.history['accuracy'])
         plt.title('model accuracy')
         plt.ylabel('accuracy')
         plt.xlabel('epoch')
@@ -38,8 +37,7 @@ class plot_graphs(object):
         plt.savefig(self.model_path + self.algorithm_name + '_accuracy_' + '.png', dpi =500)
         plt.clf()
 
-        plt.plot(self.model.history['loss'])
-        plt.plot(self.model.history['val_loss'])
+        plt.plot(self.q_learning_models.history['loss'])
         plt.title('model loss')
         plt.ylabel('loss')
         plt.xlabel('epoch')

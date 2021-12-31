@@ -79,10 +79,10 @@ if device_name != []:
 else:
     device_name = "/device:CPU:0"
     print("CPU")
-    
+
+from plot_and_animation import *
 from mountain_car_enviroment import *
 from deep_learning_model import *
-from plot_and_animation import *
 from deep_Q_learning import *
 from actor_critic import *
 

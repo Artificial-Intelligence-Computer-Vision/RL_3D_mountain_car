@@ -1,25 +1,27 @@
 from header_import import *
 
 
-class DeepQLearning(MountainCar3D, TensorBoard):
-    def __init__ (self, observation_space=(4,), action_space=5, dense_size = 24, batch_size=32, previous_model_path = "none", algorithm_name = "deep_q_learning"):
+class DeepQLearning(MountainCar3D):
+    def __init__ (self, state_space=(4,), action_space=5, dense_size = 16, batch_size=32, previous_model_path = "none", algorithm_name = "deep_q_learning"):
         super().__init__()
 
         self.delay_memory = 50000
         self.batch = batch_size
         self.dense_size = dense_size
         self.algorithm_name = algorithm_name
+
+        self.q_learning_models = None
         self.gamma = 0.95
         self.target_update = 5
         self.previous_model_path = previous_model_path
-        self.observation_space = observation_space
+        self.state_space = state_space
         self.action_space = action_space
         self.learning_rate = 0.001
         self.epochs = [1, 5, 15, 50, 100, 200]
         self.model_path = "models/" + self.algorithm_name + "_model.h5"
         self.optimizer = tf.keras.optimizers.Adam(lr=self.learning_rate, beta_1=0.9, beta_2=0.999)
         
-        if previous_model_path == "none":
+        if self.previous_model_path == "none":
             self.model = self.create_model()
         else:
             self.model.load(self.previous_model_path)
@@ -27,18 +29,21 @@ class DeepQLearning(MountainCar3D, TensorBoard):
         self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
         self.replay_memory = deque(maxlen = self.delay_memory)
+
         self.callback_1 = TensorBoard(log_dir="logs/{}-{}".format(self.algorithm_name, int(time.time())))
         self.callback_2 = ModelCheckpoint(filepath=self.model_path, save_weights_only=True, verbose=1)
         self.callback_3 = ReduceLROnPlateau(monitor='val_accuracy', patience=2, verbose=1, factor= 0.5, min_lr=0.00001)
         self.target_update_counter = 0.001
-        self.update_target_model()
+        
+        if self.algorithm_name != "deep_q_learning":
+            self.update_target_model()
 
     def create_model(self):
 
         model = Sequential()
-        model.add(Dense(self.dense_size,input_shape=self.observation_space, activation="relu"))
+        model.add(Dense(self.dense_size, input_shape=self.state_space, activation="relu"))
         model.add(Dense(self.dense_size, activation="relu"))
-        model.add(Dense(self.action_space, activation="relu"))
+        model.add(Dense(self.action_space, activation="linear"))
         model.compile(loss="mse", optimizer=self.optimizer, metrics=["accuracy"])
 
         return model
@@ -56,11 +61,11 @@ class DeepQLearning(MountainCar3D, TensorBoard):
     def memory_delay(self):
         if len(self.replay_memory) > (self.batch):
             if self.algorithm_name == "deep_q_learning":
-                self.train()
+                self.train_deep_q_learning()
             elif self.algorithm_name == "double_deep_q_learning":
-                self.train()
+                self.train_double_deep_q_learning()
             elif self.algorithm_name == "dueling_deep_q_learning":
-                self.train()
+                self.train_dueling_deep_q_learning()
     
     def target_model_update(self):
         if self.reach_goal:
@@ -71,17 +76,76 @@ class DeepQLearning(MountainCar3D, TensorBoard):
             self.target_update_counter = 0
         
 
-    def train(self):
+    def train_deep_q_learning(self):
+        
+        X_train = []
+        Y_train = []
+
+        self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
+        states_array = np.array([transition[0] for transition in self.mini_batch_sample]) 
+        next_states_array = np.array([transition[3] for transition in self.mini_batch_sample])
+
+        for index, (state, action, reward, next_state, done) in enumerate(self.mini_batch_sample):
+            if done:
+                state_value = reward
+            else:
+                state_value = reward + self.gamma *  np.max(self.model.predict(next_states_array)[index])
+        
+            q_value =  self.model.predict(states_array)[index]
+            q_value[action] = state_value
+
+            X_train.append(state)
+            Y_train.append(q_value)
+        
+        self.q_learning_models = self.model.fit(np.array(X_train), np.array(Y_train), 
+            batch_size=self.batch, 
+            verbose=0, 
+            epochs=self.epochs[0], 
+            shuffle=False, 
+            callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
+
+
+
+    def train_double_deep_q_learning(self):
+        
+        X_train = []
+        Y_train = []
+
+        self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
+        states_array = np.array([transition[0] for transition in self.mini_batch_sample]) 
+        next_states_array = np.array([transition[3] for transition in self.mini_batch_sample])
+
+        for index, (state, action, reward, next_state, done) in enumerate(self.mini_batch_sample):
+            if done:
+                state_value = reward
+            else:
+                state_value = reward + self.gamma *  np.max(self.target_model.predict(next_states_array)[index])
+        
+            q_value =  self.model.predict(states_array)[index]
+            q_value[action] = state_value
+
+            X_train.append(state)
+            Y_train.append(q_value)
+        
+        self.q_learning_models = self.model.fit(np.array(X_train), np.array(Y_train), 
+            batch_size=self.batch, 
+            verbose=0, 
+            epochs=self.epochs[0], 
+            shuffle=False, 
+            callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
+
+
+
+    def train_dueling_deep_q_learning(self):
         
         X = []
         Y = []
 
-        batch = random.sample(self.replay_memory, self.batch)
+        self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
+        current_states = np.array([transition[0] for transition in self.mini_batch_sample]) 
+        new_current_states = np.array([transition[3] for transition in self.mini_batch_sample])
 
-        current_states = np.array([transition[0] for transition in batch]) 
-        new_current_states = np.array([transition[3] for transition in batch])
-
-        for index, (state, action, reward, next_state, done) in enumerate(batch):
+        for index, (state, action, reward, next_state, done) in enumerate(self.mini_batch_sample):
             if done:
                 state_value = reward
             else:
@@ -96,9 +160,10 @@ class DeepQLearning(MountainCar3D, TensorBoard):
         self.model.fit(np.array(X), np.array(Y), 
             batch_size=self.batch, 
             verbose=0, 
-            epochs=self.epochs[1], 
+            epochs=self.epochs[0], 
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
+
 
 
     def save_model(self):

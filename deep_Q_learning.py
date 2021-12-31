@@ -2,12 +2,16 @@ from header_import import *
 
 
 class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
-    def __init__(self, episode, noise=0.0, reward_noise=0.0, random_start=False, algorithm_name = "deep_q_learning"):
-        super().__init__(algorithm_name = algorithm_name)
+    def __init__(self, episode, noise=0.0, reward_noise=0.0, random_start=False, state_world_size=200, algorithm_name="deep_q_learning"):
+        super().__init__(algorithm_name=algorithm_name)
+        
+        self.path = "graphs_charts/"
+        self.enviroment_path = self.path + "enviroment_details/"
+        self.model_path = self.path + "model_details/"
         
         self.algorithm_name = algorithm_name
         self.episode = episode
-        self.step_limit = 500
+        self.step_limit = 50
         self.epsilon = 1
         self.delay_epsilon = 0.995
         self.min_epsilon = 0.001
@@ -16,9 +20,9 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
         self.normalize = np.subtract(self.high_state_bound, self.low_state_bound)
         self.state_size = (4,)
         self.action_size = 5
-        self.state_space = 400
-        self.position_range = np.linspace(self.low_state_bound[0], self.high_state_bound[0], self.state_space)
-        self.velocity_range = np.linspace(self.low_state_bound[1], self.high_state_bound[1], int(self.state_space/5))
+        self.state_world_size = state_world_size
+        self.position_range = np.linspace(self.low_state_bound[0], self.high_state_bound[0], self.state_world_size)
+        self.velocity_range = np.linspace(self.low_state_bound[1], self.high_state_bound[1], int(self.state_world_size/5))
         self.episode_rewards = []
         self.step_per_episode = []
 
@@ -49,7 +53,6 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
                 episode_reward += reward
                 self.update_replay_memory((state, action, reward, next_state, self.reach_goal))
                 state = next_state
-                self.target_model_update()
                 self.memory_delay()
                 step += 1
 
