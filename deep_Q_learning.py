@@ -7,6 +7,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
         
         self.algorithm_name = algorithm_name
         self.episode = episode
+        self.step_limit = 500
         self.epsilon = 1
         self.delay_epsilon = 0.995
         self.min_epsilon = 0.001
@@ -42,7 +43,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
             self.reach_goal = False
             episode_reward = 0
 
-            while not self.reach_goal:
+            while not self.reach_goal and step <= self.step_limit:
                 action = self.policy(state)
                 action, reward, next_state, self.reach_goal = self.step(action)
                 episode_reward += reward
@@ -70,7 +71,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
             self.reach_goal = False
             episode_reward = 0
 
-            while not self.reach_goal:
+            while not self.reach_goal and step <= self.step_limit:
                 action = self.policy(state)
                 action, reward, next_state, self.reach_goal = self.step(action)
                 episode_reward += reward
@@ -97,7 +98,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
             self.reach_goal = False
             episode_reward = 0
 
-            while not self.reach_goal:
+            while not self.reach_goal and step <= self.step_limit:
                 action = self.policy(state)
                 action, reward, next_state, self.reach_goal = self.step(action)
                 episode_reward += reward
