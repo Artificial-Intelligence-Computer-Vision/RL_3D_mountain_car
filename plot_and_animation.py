@@ -34,7 +34,7 @@ class plot_graphs(object):
         plt.ylabel('accuracy')
         plt.xlabel('epoch')
         plt.legend(['train', 'Validation'], loc='upper left')
-        plt.savefig(self.model_path + self.algorithm_name + '_accuracy_' + '.png', dpi =500)
+        plt.savefig(self.model_path + self.algorithm_name + '_accuracy' + '.png', dpi =500)
         plt.clf()
 
         plt.plot(self.q_learning_models.history['loss'])
@@ -42,6 +42,6 @@ class plot_graphs(object):
         plt.ylabel('loss')
         plt.xlabel('epoch')
         plt.legend(['train', 'Validation'], loc='upper left')
-        plt.savefig(self.model_path + self.algorithm_name + '_lost_'+'.png', dpi =500)
+        plt.savefig(self.model_path + self.algorithm_name + '_lost'+'.png', dpi =500)
         plt.clf()
 

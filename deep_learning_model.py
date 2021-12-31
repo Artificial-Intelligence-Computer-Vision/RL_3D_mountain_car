@@ -2,7 +2,7 @@ from header_import import *
 
 
 class DeepQLearning(MountainCar3D):
-    def __init__ (self, state_space=(4,), action_space=5, dense_size = 16, batch_size=32, previous_model_path = "none", algorithm_name = "deep_q_learning"):
+    def __init__ (self, state_space=(4,), action_space=5, dense_size=6, batch_size=2, previous_model_path = "none", algorithm_name = "deep_q_learning"):
         super().__init__()
 
         self.delay_memory = 50000
@@ -45,7 +45,6 @@ class DeepQLearning(MountainCar3D):
         model.add(Dense(self.dense_size, activation="relu"))
         model.add(Dense(self.action_space, activation="linear"))
         model.compile(loss="mse", optimizer=self.optimizer, metrics=["accuracy"])
-
         return model
 
     def update_replay_memory(self, transition):
@@ -105,7 +104,6 @@ class DeepQLearning(MountainCar3D):
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
 
-
     def train_double_deep_q_learning(self):
         
         X_train = []
@@ -133,7 +131,6 @@ class DeepQLearning(MountainCar3D):
             epochs=self.epochs[0], 
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
-
 
 
     def train_dueling_deep_q_learning(self):

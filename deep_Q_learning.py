@@ -2,7 +2,7 @@ from header_import import *
 
 
 class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
-    def __init__(self, episode, noise=0.0, reward_noise=0.0, random_start=False, state_world_size=200, algorithm_name="deep_q_learning"):
+    def __init__(self, episode, noise=0.0, reward_noise=0.0, random_start=False, state_world_size=100, algorithm_name="deep_q_learning"):
         super().__init__(algorithm_name=algorithm_name)
         
         self.path = "graphs_charts/"
@@ -11,7 +11,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
         
         self.algorithm_name = algorithm_name
         self.episode = episode
-        self.step_limit = 50
+        self.step_limit = 150
         self.epsilon = 1
         self.delay_epsilon = 0.995
         self.min_epsilon = 0.001
