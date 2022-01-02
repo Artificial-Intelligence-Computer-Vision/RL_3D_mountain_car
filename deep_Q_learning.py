@@ -9,6 +9,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
         self.enviroment_path = self.path + "enviroment_details/"
         self.model_detail_path = self.path + "model_details/"
         
+        self.train_initial_model = "false"
         self.algorithm_name = algorithm_name
         self.episode = episode
         self.step_limit = 500
@@ -55,7 +56,8 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
                 state = next_state
                 self.memory_delay()
                 step += 1
-
+            
+            self.train_initial_model = "true"
             self.epsilon_reduction()
             self.step_per_episode.append(step)
             self.episode_rewards.append(episode_reward)
@@ -84,6 +86,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
                 self.memory_delay()
                 step += 1
                 
+            self.train_initial_model = "true"
             self.epsilon_reduction()
             self.step_per_episode.append(step)
             self.episode_rewards.append(episode_reward)
@@ -111,6 +114,7 @@ class deep_q_learning_algorithm(DeepQLearning, plot_graphs):
                 self.memory_delay()
                 step += 1
 
+            self.train_initial_model = "true"
             self.epsilon_reduction()
             self.step_per_episode.append(step)
             self.episode_rewards.append(episode_reward)

@@ -2,7 +2,7 @@ from header_import import *
 
 
 class DeepQLearning(MountainCar3D):
-    def __init__ (self, state_space=(4,), action_space=5, dense_size=6, batch_size=2, previous_model_path = "none", algorithm_name = "deep_q_learning"):
+    def __init__ (self, state_space=(4,), action_space=5, dense_size=6, batch_size=2, previous_model_path = "false", algorithm_name = "deep_q_learning"):
         super().__init__()
 
         self.delay_memory = 50000
@@ -21,10 +21,10 @@ class DeepQLearning(MountainCar3D):
         self.model_path = "models/" + self.algorithm_name + "_model.h5"
         self.optimizer = tf.keras.optimizers.Adam(lr=self.learning_rate, beta_1=0.9, beta_2=0.999)
         
-        if self.previous_model_path == "none":
+        if self.previous_model_path == "false":
             self.model = self.create_model()
         else:
-            self.model.load(self.previous_model_path)
+            self.model.load(self.model_path)
 
         self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
@@ -103,6 +103,8 @@ class DeepQLearning(MountainCar3D):
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
+        self.previous_model_path = self.train_initial_model
+
 
     def train_double_deep_q_learning(self):
         
@@ -131,6 +133,8 @@ class DeepQLearning(MountainCar3D):
             epochs=self.epochs[0], 
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
+
+        self.previous_model_path = self.train_initial_model
 
 
     def train_dueling_deep_q_learning(self):
@@ -161,6 +165,7 @@ class DeepQLearning(MountainCar3D):
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
+        self.previous_model_path = self.train_initial_model
 
 
     def save_model(self):
