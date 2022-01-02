@@ -9,7 +9,6 @@ class DeepQLearning(MountainCar3D):
         self.batch = batch_size
         self.dense_size = dense_size
         self.algorithm_name = algorithm_name
-
         self.q_learning_models = None
         self.gamma = 0.95
         self.target_update = 5
@@ -25,6 +24,9 @@ class DeepQLearning(MountainCar3D):
             self.model = self.create_model()
         else:
             self.model.load(self.model_path)
+        
+        self.X_train = []
+        self.Y_train = []
 
         self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
@@ -58,6 +60,10 @@ class DeepQLearning(MountainCar3D):
         self.target_model.set_weights(self.model.get_weights())
    
     def memory_delay(self):
+        
+        if self.previous_model_path == "true":
+            self.model.load_weights(self.model_path)
+
         if len(self.replay_memory) > (self.batch):
             if self.algorithm_name == "deep_q_learning":
                 self.train_deep_q_learning()
@@ -77,9 +83,9 @@ class DeepQLearning(MountainCar3D):
 
     def train_deep_q_learning(self):
         
-        X_train = []
-        Y_train = []
-
+        X = []
+        Y = []
+        
         self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
         states_array = np.array([transition[0] for transition in self.mini_batch_sample]) 
         next_states_array = np.array([transition[3] for transition in self.mini_batch_sample])
@@ -93,10 +99,13 @@ class DeepQLearning(MountainCar3D):
             q_value =  self.model.predict(states_array)[index]
             q_value[action] = state_value
 
-            X_train.append(state)
-            Y_train.append(q_value)
+            X.append(state)
+            Y.append(q_value)
+
+        self.X_train.append(X)
+        self.Y_train.append(Y)
         
-        self.q_learning_models = self.model.fit(np.array(X_train), np.array(Y_train), 
+        self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
             batch_size=self.batch, 
             verbose=0, 
             epochs=self.epochs[0], 
@@ -108,8 +117,8 @@ class DeepQLearning(MountainCar3D):
 
     def train_double_deep_q_learning(self):
         
-        X_train = []
-        Y_train = []
+        X = []
+        Y = []
 
         self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
         states_array = np.array([transition[0] for transition in self.mini_batch_sample]) 
@@ -124,10 +133,13 @@ class DeepQLearning(MountainCar3D):
             q_value =  self.model.predict(states_array)[index]
             q_value[action] = state_value
 
-            X_train.append(state)
-            Y_train.append(q_value)
+            X.append(state)
+            Y.append(q_value)
         
-        self.q_learning_models = self.model.fit(np.array(X_train), np.array(Y_train), 
+        self.X_train.append(X)
+        self.Y_train.append(Y)
+        
+        self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
             batch_size=self.batch, 
             verbose=0, 
             epochs=self.epochs[0], 
@@ -141,7 +153,7 @@ class DeepQLearning(MountainCar3D):
         
         X = []
         Y = []
-
+        
         self.mini_batch_sample = random.sample(self.replay_memory, self.batch)
         current_states = np.array([transition[0] for transition in self.mini_batch_sample]) 
         new_current_states = np.array([transition[3] for transition in self.mini_batch_sample])
