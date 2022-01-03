@@ -16,7 +16,7 @@ if __name__ == "__main__":
         plot.plot_episode_time_step(step_per_episode, algorithm="actor_critic", type_graph = "step_number")
 
     elif algorithm == "double_deep_q_learning_continues_and_experience_replay":
-        deep_q_learning_obj = deep_q_learning_algorithm(episode = 10, algorithm_name="double_deep_q_learning", transfer_learning="true")
+        deep_q_learning_obj = deep_q_learning_algorithm(episode = 1, algorithm_name="double_deep_q_learning", transfer_learning="true")
         deep_q_learning_obj.double_deep_q_learning()
    
     elif algorithm == "dueling_deep_q_learning_continues_and_experience_replay":
