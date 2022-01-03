@@ -2,7 +2,7 @@ from header_import import *
 
 
 class DeepQLearning(MountainCar3D):
-    def __init__ (self, state_space=(4,), action_space=5, dense_size=6, batch_size=2, previous_model_path = "false", algorithm_name = "deep_q_learning"):
+    def __init__ (self, state_space=(4,), action_space=5, dense_size=6, batch_size=200, algorithm_name="deep_q_learning", transfer_learning="true"):
         super().__init__()
 
         self.delay_memory = 50000
@@ -12,18 +12,17 @@ class DeepQLearning(MountainCar3D):
         self.q_learning_models = None
         self.gamma = 0.95
         self.target_update = 5
-        self.previous_model_path = previous_model_path
         self.state_space = state_space
         self.action_space = action_space
         self.learning_rate = 0.001
         self.epochs = [1, 5, 15, 50, 100, 200]
         self.model_path = "models/" + self.algorithm_name + "_model.h5"
         self.optimizer = tf.keras.optimizers.Adam(lr=self.learning_rate, beta_1=0.9, beta_2=0.999)
-        
-        if self.previous_model_path == "false":
-            self.model = self.create_model()
-        else:
-            self.model.load(self.model_path)
+        self.transfer_learning = transfer_learning
+        self.model = self.create_model()
+
+        if self.transfer_learning == "true":
+            self.model.load_weights(self.model_path)
         
         self.X_train = []
         self.Y_train = []
@@ -61,7 +60,7 @@ class DeepQLearning(MountainCar3D):
    
     def memory_delay(self):
         
-        if self.previous_model_path == "true":
+        if self.transfer_learning == "true":
             self.model.load_weights(self.model_path)
 
         if len(self.replay_memory) > (self.batch):
@@ -102,17 +101,17 @@ class DeepQLearning(MountainCar3D):
             X.append(state)
             Y.append(q_value)
 
-        self.X_train.append(X)
-        self.Y_train.append(Y)
+        self.X_train.extend(X)
+        self.Y_train.extend(Y)
         
-        self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
+        self.q_learning_models = self.model.fit(np.array(X), np.array(Y), 
             batch_size=self.batch, 
             verbose=0, 
             epochs=self.epochs[0], 
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
-        self.previous_model_path = self.train_initial_model
+        self.transfer_learning = self.train_initial_model
 
 
     def train_double_deep_q_learning(self):
@@ -136,8 +135,8 @@ class DeepQLearning(MountainCar3D):
             X.append(state)
             Y.append(q_value)
         
-        self.X_train.append(X)
-        self.Y_train.append(Y)
+        self.X_train.extend(X)
+        self.Y_train.extend(Y)
         
         self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
             batch_size=self.batch, 
@@ -146,7 +145,7 @@ class DeepQLearning(MountainCar3D):
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
-        self.previous_model_path = self.train_initial_model
+        self.transfer_learning = self.train_initial_model
 
 
     def train_dueling_deep_q_learning(self):
@@ -169,6 +168,10 @@ class DeepQLearning(MountainCar3D):
 
             X.append(state)
             Y.append(current_q_value)
+       
+
+        self.X_train.extend(X)
+        self.Y_train.extend(Y)
         
         self.model.fit(np.array(X), np.array(Y), 
             batch_size=self.batch, 
@@ -177,7 +180,7 @@ class DeepQLearning(MountainCar3D):
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
 
-        self.previous_model_path = self.train_initial_model
+        self.transfer_learning = self.train_initial_model
 
 
     def save_model(self):
