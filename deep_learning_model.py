@@ -39,6 +39,7 @@ class DeepQLearning(MountainCar3D):
         if self.algorithm_name != "deep_q_learning":
             self.update_target_model()
 
+
     def create_model(self):
 
         model = Sequential()
