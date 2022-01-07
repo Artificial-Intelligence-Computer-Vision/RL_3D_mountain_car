@@ -25,6 +25,8 @@ class DeepQLearning(MountainCar3D):
         
         if self.transfer_learning == "true":
             self.model.load_weights(self.model_path)
+        else:
+            self.save_model()
         
         self.X_train = []
         self.Y_train = []
@@ -91,6 +93,8 @@ class DeepQLearning(MountainCar3D):
         
         if self.transfer_learning == "true":
             self.model.load_weights(self.model_path)
+        else:
+            self.save_model()
 
         if len(self.replay_memory) > (self.batch):
             if self.algorithm_name == "deep_q_learning":
@@ -99,7 +103,7 @@ class DeepQLearning(MountainCar3D):
                 self.train_double_deep_q_learning()
             elif self.algorithm_name == "dueling_deep_q_learning":
                 self.train_dueling_deep_q_learning()
-    
+
     def target_model_update(self):
         if self.reach_goal:
             self.target_update_counter += 1
@@ -109,7 +113,6 @@ class DeepQLearning(MountainCar3D):
             self.update_target_model()
             self.target_update_counter = 0
     
-
     def backpropagation(self):
 
          self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
@@ -118,7 +121,6 @@ class DeepQLearning(MountainCar3D):
             epochs=self.epochs[0], 
             shuffle=False, 
             callbacks=[self.callback_1, self.callback_2, self.callback_3] if self.reach_goal else None)
-
 
     def train_deep_q_learning(self):
         
