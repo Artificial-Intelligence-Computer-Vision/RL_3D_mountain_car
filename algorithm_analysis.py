@@ -20,5 +20,5 @@ if __name__ == "__main__":
         deep_q_learning_obj.double_deep_q_learning()
    
     elif algorithm == "dueling_deep_q_learning_continues_and_experience_replay":
-        deep_q_learning_obj = deep_q_learning_algorithm(episode = 10, algorithm_name="dueling_deep_q_learning", transfer_learning="true")
+        deep_q_learning_obj = deep_q_learning_algorithm(episode = 10, algorithm_name="dueling_deep_q_learning", transfer_learning="false")
         deep_q_learning_obj.dueling_deep_q_learning()

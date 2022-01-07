@@ -23,23 +23,14 @@ class DeepQLearning(MountainCar3D):
         self.transfer_learning = transfer_learning
         self.model = self.create_model()
         
-        if self.algorithm_name != "dueling_deep_q_learning":
-            if self.transfer_learning == "true":
-                self.model.load_weights(self.model_path)
-        # else:
-            # self.model = keras.models.load_model(self.model_path)
-        
+        if self.transfer_learning == "true":
+            self.model.load_weights(self.model_path)
         
         self.X_train = []
         self.Y_train = []
 
         self.target_model = self.create_model()
-
-        if self.algorithm_name != "dueling_deep_q_learning":
-            self.target_model.set_weights(self.model.get_weights())
-        else:
-            self.target_model = keras.models.load_model(self.model_path)
-
+        self.target_model.set_weights(self.model.get_weights())
         
         self.replay_memory = deque(maxlen = self.delay_memory)
         self.callback_1 = TensorBoard(log_dir="logs/{}-{}".format(self.algorithm_name, int(time.time())))
@@ -65,17 +56,16 @@ class DeepQLearning(MountainCar3D):
         if self.algorithm_name == "dueling_deep_q_learning":
             
             inputs = Input(shape=layer_input_shape)
-            advantage_stream = Dense(4)(inputs)
-            advantage_stream = Activation("relu")(advantage_stream)
-            value_stream = Dense(4)(inputs)
-            value_stream = Activation("relu")(value_stream)
 
-            advantage = Dense(self.action_space)(advantage_stream)
-            advantage = Activation("relu")(advantage)
+            advantage_stream = Dense(16, activation="relu")(inputs)
+            value_stream = Dense(16, activation="relu")(inputs)
+            advantage = Dense(self.action_space, activation="relu")(advantage_stream)
             value = Dense(1, activation="relu")(value_stream)
-            value = Activation("relu")(value)
 		    
             model = value + (advantage - tf.reduce_mean(advantage, axis=1, keepdims=True))
+
+            model = Model(inputs = inputs, outputs = model)
+            model.compile(loss="mse", optimizer=self.optimizer, metrics=["accuracy"])
             return model
         
         else:
@@ -95,18 +85,12 @@ class DeepQLearning(MountainCar3D):
         return self.model.predict(state)[0]
 
     def update_target_model(self):
-        if self.algorithm_name != "dueling_deep_q_learning":
-            self.target_model.set_weights(self.model.get_weights())
-        else:
-            self.target_model = keras.models.load_model(self.model_path)
+        self.target_model.set_weights(self.model.get_weights())
    
     def memory_delay(self):
         
-        if self.algorithm_name != "dueling_deep_q_learning":
-            if self.transfer_learning == "true":
-                self.model.load_weights(self.model_path)
-        # else:
-            # self.model = keras.models.load_model(self.model_path)
+        if self.transfer_learning == "true":
+            self.model.load_weights(self.model_path)
 
         if len(self.replay_memory) > (self.batch):
             if self.algorithm_name == "deep_q_learning":
@@ -217,9 +201,9 @@ class DeepQLearning(MountainCar3D):
             if done:
                 state_value = reward
             else:
-                state_value = reward + self.gamma *  np.max(self.target_model.predict_classes(next_states_array)[index])
+                state_value = reward + self.gamma *  np.max(self.target_model.predict(next_states_array)[index])
         
-            q_value =  self.model.predict_classes(states_array)[index]
+            q_value =  self.model.predict(states_array)[index]
             q_value[action] = state_value
 
             X.append(state)
