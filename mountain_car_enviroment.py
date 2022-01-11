@@ -16,6 +16,7 @@ class MountainCar3D(object):
 
 
     def reset(self):
+        self.reach_goal = False
         if self.random_start:
             self.state = np.random.random_sample(self.state.shape)
             self.state *= (self.state_range[:,:,1] - self.state_range[:,:,0])
@@ -32,7 +33,6 @@ class MountainCar3D(object):
 
 
     def step(self, action):
-        self.reach_goal = False
         reward = -1.0
         self.taken_action(action)
 
