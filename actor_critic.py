@@ -2,7 +2,7 @@ from header_import import *
 
 
 class actor_critic(MountainCar3D, plot_graphs):
-    def __init__(self, gamma = 0.8, lambda_theta = 0.05, lambda_weight = 0.05, alpha_theta = 0.7, alpha_weight = 0.7, episode = 10000, algorithm_name="actor_critic"):
+    def __init__(self, gamma = 0.5, lambda_theta = 0.0005, lambda_weight = 0.0005, alpha_theta = 2**-9, alpha_weight = 2**-6, episode = 10000, algorithm_name="actor_critic"):
         super().__init__()
 
         self.path = "graphs_charts/"
@@ -60,6 +60,7 @@ class actor_critic(MountainCar3D, plot_graphs):
                 
                 if reached_goal:
                     delta = reward - np.dot(state, self.weight)
+                    break
                 else:
                     delta = reward + self.gamma *(np.dot(next_state, self.weight)) - (np.dot(state, self.weight))
                 
