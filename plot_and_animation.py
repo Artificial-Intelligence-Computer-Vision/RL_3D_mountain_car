@@ -6,6 +6,7 @@ class plot_graphs(object):
         pass
 
 
+
     def plot_episode_time_step(self, data, type_graph):
 
         fig = plt.figure()
@@ -14,14 +15,14 @@ class plot_graphs(object):
 
         if type_graph == "cumulative_reward":
             axis.plot(data, color=color_graph)
-            axis.set_title("Reward vs Time Step")
-            axis.set_xlabel("Time Steps")
+            axis.set_title("Reward vs Episode")
+            axis.set_xlabel("Episode")
             axis.set_ylabel("Reward per Step")
         elif type_graph == "step_number":
             axis.plot(data, color=color_graph)
-            axis.set_title("Number of steps per episode vs. number of episodes")
-            axis.set_xlabel("Number of Steps")
-            axis.set_ylabel("Episodes")
+            axis.set_title("Number of steps per episode vs. Episode")
+            axis.set_xlabel("Episode")
+            axis.set_ylabel("step per episode")
         plt.savefig(self.enviroment_path + self.algorithm_name + "_" + type_graph + ".png", dpi =500)
 
 

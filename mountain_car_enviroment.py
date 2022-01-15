@@ -33,11 +33,11 @@ class MountainCar3D(object):
 
 
     def step(self, action):
-        reward = -1.0
+        reward = -0.01
         self.taken_action(action)
-
+        
         if self.goal_reached():
-            reward = 0
+            reward = 1
             self.reach_goal = True
 
         if self.reward_noise > 0:
