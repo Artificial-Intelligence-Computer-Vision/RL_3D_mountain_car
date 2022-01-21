@@ -214,7 +214,7 @@ class DeepQLearning(MountainCar3D):
         self.X_train.extend(X)
         self.Y_train.extend(Y)
         
-        self.q_learning_models = self.model.fit(np.array(self.X_train), np.array(self.Y_train), 
+        self.q_learning_models = self.model.fit(np.array(X), np.array(Y), 
             batch_size=self.batch, 
             verbose=0, 
             epochs=self.epochs[0], 
